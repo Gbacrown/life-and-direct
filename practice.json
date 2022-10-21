@@ -1,0 +1,77 @@
+{
+"AWSTemplateFormatVersion": "2010-09-09",
+    "Description": "",
+    "Metadata": {
+
+    },
+    "Parameters": {
+    
+    },
+    "Mappings": {
+
+    },
+    "Conditions": {
+
+    },
+    "Resources": {
+        
+        "CustomizedVPC": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": "10.0.0.0/16",
+            "Tags":[
+            { "Key": "Name", "Value":  "CustomizedVPC" }]
+          }
+        },
+        "PrivateSubnet": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": "us-east-1a",
+            "VpcId": { "Ref" : "CustomizedVPC" },
+            "CidrBlock": "10.0.1.0/28",
+            "Tags": [ { "Key": "Name", "Value":  "PrivateSubnet" } ]
+          }
+        },
+        "PublicSubnet": {
+          "Type": "AWS::EC2::Subnet",
+          "Properties": {
+            "AvailabilityZone": "us-east-1b",
+            "VpcId": { "Ref" : "CustomizedVPC" },
+            "CidrBlock": "10.0.2.0/24",
+            "Tags": [ { "Key": "Name", "Value":  "PublicSubnet"} ]
+          }
+        },
+        "IGW": {
+          "Type": "AWS::EC2::InternetGateway",
+          "Properties": {
+            "Tags":[ { "Key": "Name", "Value":  "IGW" } ]
+          }
+        },
+        "AttachGateway": {
+          "Type": "AWS::EC2::VPCGatewayAttachment",
+          "Properties": {
+            "VpcId": { "Ref" : "CustomizedVPC" },
+            "InternetGatewayId": { "Ref": "IGW" }
+          }
+        },
+        "routeTableNamePublic": {
+          "Type": "AWS::EC2::RouteTable",
+          "Properties": {
+            "VpcId": { "Ref" : "CustomizedVPC" },
+            "Tags":[ { "Key": "Name", "Value":  "routeTablePublic" } ]
+          }
+        },
+        
+        "routeTableAssocName": {
+          "Type": "AWS::EC2::SubnetRouteTableAssociation",
+          "Properties": {
+            "SubnetId": { "Ref" : "PublicSubnet" },
+            "RouteTableId": "routeTableNamePublic"
+          }
+        }
+        
+    },
+    "Outputs": {
+
+    }
+}
